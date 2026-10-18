@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>鑫和排骨飯 - 店家接單後台</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="admin-page">
+    <main id="loginScreen" class="login-screen">
+      <form id="loginForm" class="login-card">
+        <span class="brand-mark">鑫</span>
+        <p class="eyebrow">店家專用</p>
+        <h1>登入接單後台</h1>
+        <label for="loginEmail">電子郵件</label>
+        <input id="loginEmail" name="email" type="email" autocomplete="username" required />
+        <label for="loginPassword">密碼</label>
+        <input id="loginPassword" name="password" type="password" autocomplete="current-password" required />
+        <p id="loginError" class="login-error" role="alert" aria-live="polite"></p>
+        <button id="loginButton" class="login-button" type="submit">登入</button>
+      </form>
+    </main>
+
+    <div id="adminShell" class="admin-shell" hidden>
+      <aside class="admin-sidebar">
+        <div class="brand-block">
+          <span class="brand-mark">鑫</span>
+          <div>
+            <h1>鑫和排骨飯</h1>
+            <small>接單後台</small>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav" aria-label="店家功能選單">
+          <button class="nav-item active" data-view="orders">接單管理</button>
+          <button class="nav-item" data-view="history">訂單歷史</button>
+          <button class="nav-item" data-view="analytics">營業統計</button>
+          <button class="nav-item" data-view="menu">菜單管理</button>
+        </nav>
+      </aside>
+
+      <main class="admin-main">
+        <header class="admin-topbar">
+          <div>
+            <p class="eyebrow" id="pageEyebrow">今日營業</p>
+            <h2 id="pageTitle">接單管理</h2>
+          </div>
+          <button id="logoutButton" class="filter-btn" type="button">登出</button>
+        </header>
+
+        <section class="view-panel" data-view-panel="orders">
+          <section class="stats-grid">
+            <article class="stat-card"><span>待處理</span><strong id="pendingCount">0</strong></article>
+            <article class="stat-card accent"><span>製作中</span><strong id="processingCount">0</strong></article>
+            <article class="stat-card success"><span>已完成</span><strong id="completedCount">0</strong></article>
+            <article class="stat-card warning"><span>今日營收</span><strong id="totalRevenue">NT$ 0</strong></article>
+          </section>
+
+          <section class="filter-bar" aria-label="訂單狀態篩選">
+            <button class="filter-btn active" data-filter="全部">全部</button>
+            <button class="filter-btn" data-filter="未處理">未處理</button>
+            <button class="filter-btn" data-filter="製作中">製作中</button>
+            <button class="filter-btn" data-filter="已完成">已完成</button>
+          </section>
+
+          <section id="orderQueue" class="order-queue" aria-live="polite"></section>
+        </section>
+
+        <section class="view-panel" data-view-panel="history" hidden>
+          <div class="panel-toolbar">
+            <p id="historyCount" class="panel-note">共 0 筆訂單</p>
+            <div class="history-filter-group">
+              <label class="select-label" for="historyDate">日期
+                <input id="historyDate" type="date" />
+              </label>
+              <label class="select-label" for="historyFilter">顯示
+                <select id="historyFilter">
+                  <option value="全部">全部訂單</option>
+                  <option value="已完成">已完成</option>
+                  <option value="進行中">未完成</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <section id="orderHistory" class="order-queue" aria-live="polite"></section>
+        </section>
+
+        <section class="view-panel" data-view-panel="analytics" hidden>
+          <div class="panel-toolbar">
+            <p class="panel-note">營收以「已完成」訂單計算</p>
+            <div class="analytics-range-picker">
+              <label class="select-label" for="analyticsStartDate">開始
+                <input id="analyticsStartDate" type="date" />
+              </label>
+              <label class="select-label" for="analyticsEndDate">結束
+                <input id="analyticsEndDate" type="date" />
+              </label>
+              <button type="button" id="applyAnalyticsRange" class="filter-btn active">套用</button>
+            </div>
+          </div>
+          <section class="stats-grid analytics-grid">
+            <article class="stat-card"><span>訂單總數</span><strong id="analyticsOrderCount">0</strong></article>
+            <article class="stat-card accent"><span>完成訂單</span><strong id="analyticsCompletedCount">0</strong></article>
+            <article class="stat-card success"><span>完成營收</span><strong id="analyticsRevenue">NT$ 0</strong></article>
+            <article class="stat-card warning"><span>平均客單</span><strong id="analyticsAverage">NT$ 0</strong></article>
+          </section>
+          <section class="analytics-section">
+            <div class="analytics-section-heading">
+              <h3>熱銷餐點</h3>
+              <span>依完成訂單數量排序</span>
+            </div>
+            <div id="popularItems" class="popular-items" aria-live="polite"></div>
+          </section>
+        </section>
+
+        <section class="view-panel" data-view-panel="menu" hidden>
+          <div class="panel-toolbar menu-settings-heading">
+            <div>
+              <p class="eyebrow">菜單維護</p>
+              <h3>修改餐點價格與照片</h3>
+            </div>
+            <p class="panel-note">貼上可公開瀏覽的 HTTPS 圖片網址，不需啟用 Firebase Storage。</p>
+          </div>
+          <section id="menuManagement" class="menu-management" aria-live="polite"></section>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="admin.js"></script>
+  </body>
+</html>

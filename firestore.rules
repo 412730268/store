@@ -1,0 +1,63 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isStoreOwner() {
+      return request.auth != null
+        && request.auth.uid == "REPLACE_WITH_STORE_OWNER_UID";
+    }
+
+    function validMenuData(data) {
+      return data.keys().hasOnly(["price", "imageUrl"])
+        && data.keys().hasAny(["price", "imageUrl"])
+        && (!data.keys().hasAny(["price"])
+          || (data.price is number && data.price >= 0))
+        && (!data.keys().hasAny(["imageUrl"])
+          || (data.imageUrl is string && data.imageUrl.size() <= 2048));
+    }
+
+    function validNewOrder() {
+      return request.resource.data.keys().hasAll([
+          "time",
+          "createdAt",
+          "items",
+          "totalAmount",
+          "status"
+        ])
+        && request.resource.data.keys().hasOnly([
+          "time",
+          "createdAt",
+          "items",
+          "totalAmount",
+          "status"
+        ])
+        && request.resource.data.time is string
+        && request.resource.data.createdAt is timestamp
+        && request.resource.data.items is list
+        && request.resource.data.items.size() > 0
+        && request.resource.data.totalAmount is number
+        && request.resource.data.totalAmount >= 0
+        && request.resource.data.status == "未處理";
+    }
+
+    match /menu/{itemId} {
+      allow read: if true;
+      allow create, update: if isStoreOwner()
+        && validMenuData(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /orders/{orderId} {
+      allow create: if validNewOrder();
+      allow read: if isStoreOwner();
+      allow update: if isStoreOwner()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status"])
+        && request.resource.data.status in ["未處理", "製作中", "已完成"];
+      allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
